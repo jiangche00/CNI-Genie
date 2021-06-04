@@ -28,6 +28,8 @@ import (
 	"strings"
 
 	"errors"
+	"sync"
+
 	"github.com/cni-genie/CNI-Genie/client"
 	it "github.com/cni-genie/CNI-Genie/interfaces"
 	"github.com/cni-genie/CNI-Genie/plugins"
@@ -36,20 +38,19 @@ import (
 	"github.com/containernetworking/cni/pkg/skel"
 	"github.com/containernetworking/cni/pkg/types"
 	"github.com/containernetworking/cni/pkg/types/current"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	api "k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
-	"sync"
 )
 
 const (
 	// MultiIPPreferencesAnnotation is a key used for parsing pod
 	// definitions containing "multi-ip-preferences" annotation
 	MultiIPPreferencesAnnotation = "multi-ip-preferences"
-	DefaultNetDir                = "/etc/cni/net.d"
+	DefaultNetDir                = "/opt/k8s/cni/net.d"
 	// DefaultPluginDir specifies the default directory path for cni binary files
-	DefaultPluginDir                   = "/opt/cni/bin"
+	DefaultPluginDir                   = "/opt/k8s/cni/bin"
 	MultiIPPreferencesAnnotationFormat = `{"multi_entry": 0,"ips": {}}`
 	// SupportedPlugins lists the plugins supported by Genie
 	SupportedPlugins = "bridge, calico, canal, flannel, macvlan, Romana, sriov, weave"

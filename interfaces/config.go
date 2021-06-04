@@ -2,18 +2,19 @@ package interfaces
 
 import (
 	"fmt"
-	"github.com/containernetworking/cni/libcni"
-	"k8s.io/apimachinery/pkg/util/json"
 	"os"
 	"strings"
+
+	"github.com/containernetworking/cni/libcni"
+	"k8s.io/apimachinery/pkg/util/json"
 )
 
 const (
 	// ConfFilePermission specifies the default permission for conf file
 	ConfFilePermission os.FileMode = 0644
-	DefaultNetDir                  = "/etc/cni/net.d/"
+	DefaultNetDir                  = "/opt/k8s/cni/net.d/"
 	// DefaultPluginDir specifies the default directory path for cni binary files
-	DefaultPluginDir = "/opt/cni/bin/"
+	DefaultPluginDir = "/opt/k8s/cni/bin"
 )
 
 type CNIConfig struct {
