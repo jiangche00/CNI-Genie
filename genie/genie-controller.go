@@ -21,7 +21,6 @@ package genie
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"strconv"
@@ -658,28 +657,31 @@ func (gc *GenieController) parseCNIAnnotations(annot map[string]string, k8sArgs 
 	return finalPluginInfos, nil
 }
 
-// checkPluginBinary checks for existence of plugin binary file
-func checkPluginBinary(cniName string) error {
-	binaries, err := ioutil.ReadDir(DefaultPluginDir)
-	if err != nil {
-		return fmt.Errorf("Error while checking binary file for plugin %s: %v", cniName, err)
-	}
+// comment by jiangche00
+// // checkPluginBinary checks for existence of plugin binary file
+// func checkPluginBinary(cniName string) error {
+// 	binaries, err := ioutil.ReadDir(DefaultPluginDir)
+// 	if err != nil {
+// 		return fmt.Errorf("Error while checking binary file for plugin %s: %v", cniName, err)
+// 	}
 
-	for _, bin := range binaries {
-		if true == strings.Contains(bin.Name(), cniName) {
-			return nil
-		}
-	}
-	return fmt.Errorf("Corresponding binary for user requested plugin (%s) is not present in plugin directory (%s)", cniName, DefaultPluginDir)
-}
+// 	for _, bin := range binaries {
+// 		if true == strings.Contains(bin.Name(), cniName) {
+// 			return nil
+// 		}
+// 	}
+// 	return fmt.Errorf("Corresponding binary for user requested plugin (%s) is not present in plugin directory (%s)", cniName, DefaultPluginDir)
+// }
 
 // createConfIfBinaryExists checks for the binary file for a cni type and creates the conf if binary exists
 func (gc *GenieController) createConfIfBinaryExists(cniName string) (*libcni.NetworkConfigList, error) {
-	// Check for the corresponding binary file.
-	// If binary is not present, then do not create the conf file
-	if err := checkPluginBinary(cniName); err != nil {
-		return nil, err
-	}
+
+	// comment by jiangche00
+	// // Check for the corresponding binary file.
+	// // If binary is not present, then do not create the conf file
+	// if err := checkPluginBinary(cniName); err != nil {
+	// 	return nil, err
+	// }
 
 	var pluginObj interface{}
 	switch cniName {
