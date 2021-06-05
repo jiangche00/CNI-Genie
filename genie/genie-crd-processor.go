@@ -21,9 +21,10 @@ package genie
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/cni-genie/CNI-Genie/utils"
 	"os"
 	"strings"
+
+	"github.com/cni-genie/CNI-Genie/utils"
 )
 
 /**
@@ -38,7 +39,7 @@ func (gc *GenieController) getPluginInfoFromPhysicalNw(phyNwName string, namespa
 	physicalNwObj, err := gc.Kc.GetRaw(physicalNwPath)
 
 	if err != nil {
-		return fmt.Errorf("CNI Genie failed to get physical network object for the network %v, namespace %v\n", phyNwName, namespace)
+		return fmt.Errorf("CNI Genie failed to get physical network object for the network %v, namespace %v", phyNwName, namespace)
 	}
 
 	physicalNwInfo := utils.PhysicalNetwork{}
@@ -47,7 +48,7 @@ func (gc *GenieController) getPluginInfoFromPhysicalNw(phyNwName string, namespa
 	}
 	pluginInfo.Refer_nic = physicalNwInfo.Spec.ReferNic
 	fmt.Fprintf(os.Stderr, "CNI Genie physicalNwInfo=%v\n", physicalNwInfo)
-	if physicalNwInfo.Spec.SharedStatus.DedicatedStatus == true {
+	if physicalNwInfo.Spec.SharedStatus.DedicatedStatus {
 
 		pluginInfo.PluginName = physicalNwInfo.Spec.SharedStatus.Plugin
 	}
@@ -68,7 +69,7 @@ func (gc *GenieController) getPluginInfoFromNwAnnot(networkAnnot string, namespa
 	pluginInfoList := make([]*utils.PluginInfo, 0, len(logicalNwList))
 	for _, logicalNw := range logicalNwList {
 		pluginInfo := new(utils.PluginInfo)
-		if true == strings.Contains(logicalNw, utils.IfNameDelimiter) {
+		if strings.Contains(logicalNw, utils.IfNameDelimiter) {
 			netNIfName := strings.Split(logicalNw, utils.IfNameDelimiter)
 			networkName = strings.TrimSpace(netNIfName[0])
 			pluginInfo.IfName = strings.TrimSpace(netNIfName[1])
@@ -83,7 +84,7 @@ func (gc *GenieController) getPluginInfoFromNwAnnot(networkAnnot string, namespa
 		logicalNwObj, err := gc.Kc.GetRaw(logicalNwPath)
 
 		if err != nil {
-			return pluginInfoList, fmt.Errorf("CNI Genie failed to get logical network object for the network %v, namespace %v\n", networkName, namespace)
+			return pluginInfoList, fmt.Errorf("CNI Genie failed to get logical network object for the network %v, namespace %v", networkName, namespace)
 		}
 
 		logicalNwInfo := utils.LogicalNetwork{}
@@ -95,13 +96,13 @@ func (gc *GenieController) getPluginInfoFromNwAnnot(networkAnnot string, namespa
 			if logicalNwInfo.Spec.Plugin != "" {
 				pluginInfo.PluginName = logicalNwInfo.Spec.Plugin
 			} else {
-				return pluginInfoList, fmt.Errorf("CNI Genie failed to find physical network mapping in logical network %v, "+"namespace %v\n",
+				return pluginInfoList, fmt.Errorf("CNI Genie failed to find physical network mapping in logical network %v, "+"namespace %v",
 					networkName, namespace)
 			}
 		} else {
 			err = gc.getPluginInfoFromPhysicalNw(logicalNwInfo.Spec.PhysicalNet, namespace, pluginInfo)
 			if err != nil {
-				return pluginInfoList, fmt.Errorf("CNI Genie failed to get plugin info from physical network object for the network %v, namespace %v\n",
+				return pluginInfoList, fmt.Errorf("CNI Genie failed to get plugin info from physical network object for the network %v, namespace %v",
 					networkName, namespace)
 			}
 		}
@@ -113,13 +114,13 @@ func (gc *GenieController) getPluginInfoFromNwAnnot(networkAnnot string, namespa
 
 		pluginInfo.Config, err = gc.loadPluginConfig(pluginInfo.PluginName)
 		if err != nil {
-			return nil, fmt.Errorf("Error loading plugin configuration for plugin (%s) for logical network (%s:%s): %v", pluginInfo.PluginName, namespace, networkName, err)
+			return nil, fmt.Errorf("error loading plugin configuration for plugin (%s) for logical network (%s:%s): %v", pluginInfo.PluginName, namespace, networkName, err)
 		}
 
 		if pluginInfo.Subnet != "" {
 			confbytes, err := useCustomSubnet(pluginInfo.Config.Plugins[0].Bytes, pluginInfo.Subnet)
 			if err != nil {
-				return nil, fmt.Errorf("Error while inserting custom subnet into plugin configuration: %v", err)
+				return nil, fmt.Errorf("error while inserting custom subnet into plugin configuration: %v", err)
 			}
 			pluginInfo.Config.Plugins[0].Bytes = confbytes
 		}

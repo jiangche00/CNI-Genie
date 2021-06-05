@@ -14,12 +14,13 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"runtime"
+
 	"github.com/cni-genie/CNI-Genie/genie"
 	"github.com/containernetworking/cni/pkg/skel"
 	"github.com/containernetworking/cni/pkg/types"
 	"github.com/containernetworking/cni/pkg/version"
-	"os"
-	"runtime"
 )
 
 func init() {
@@ -36,11 +37,11 @@ func cmdAdd(args *skel.CmdArgs) error {
 	if err != nil {
 		return fmt.Errorf("failed to load netconf: %v", err)
 	}
-	gc, err := genie.NewGenieController(conf)
+	cniArgs := genie.PopulateCNIArgs(args)
+	gc, err := genie.NewGenieController(conf, cniArgs)
 	if err != nil {
 		return err
 	}
-	cniArgs := genie.PopulateCNIArgs(args)
 	fmt.Fprintf(os.Stderr, "CNI Genie Add IP address\n")
 	result, ipamErr := gc.AddPodNetwork(cniArgs, conf)
 	if ipamErr != nil || nil == result {
@@ -58,11 +59,11 @@ func cmdDel(args *skel.CmdArgs) error {
 	if err != nil {
 		return fmt.Errorf("failed to load netconf: %v", err)
 	}
-	gc, err := genie.NewGenieController(conf)
+	cniArgs := genie.PopulateCNIArgs(args)
+	gc, err := genie.NewGenieController(conf, cniArgs)
 	if err != nil {
 		return err
 	}
-	cniArgs := genie.PopulateCNIArgs(args)
 	fmt.Fprintf(os.Stderr, "CNI Genie releasing IP address\n")
 	ipamErr := gc.DeletePodNetwork(cniArgs, conf)
 	if ipamErr != nil {

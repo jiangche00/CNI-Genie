@@ -27,14 +27,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	. "github.com/cni-genie/CNI-Genie/utils"
-	"github.com/google/cadvisor/info/v1"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
 	"strings"
+
+	"github.com/cni-genie/CNI-Genie/utils"
+	v1 "github.com/google/cadvisor/info/v1"
 )
 
 const (
@@ -58,9 +59,9 @@ func getCadClient() *CadClient {
 
 // Returns the JSON container information for the specified
 // Docker container and request.
-func (gc *GenieController) GetDockerContainers(url string, query *v1.ContainerInfoRequest) (cinfo []ContainerStatsGenie, err error) {
+func (gc *GenieController) GetDockerContainers(url string, query *v1.ContainerInfoRequest) (cinfo []utils.ContainerStatsGenie, err error) {
 	u := containerInfoUrl(url, "/")
-	var containerInfoObj ContainerInfoGenie
+	var containerInfoObj utils.ContainerInfoGenie
 	if err = httpGetJsonData(&containerInfoObj, query, u, "get all containers info", gc.Cad); err != nil {
 		return
 	}
@@ -125,7 +126,7 @@ eg: flannel=350, calico=250, weave=150
 It returns {weave, calico, flannel}
 
 */
-func computeNetworkUsage(cinfo []ContainerStatsGenie) string {
+func computeNetworkUsage(cinfo []utils.ContainerStatsGenie) string {
 	//default ranks of usage
 	//TODO (Karun): This is just a simple way of ranking. Needs improvement.
 	//go with flannel as first preference, calico as second
@@ -156,7 +157,7 @@ func computeNetworkUsage(cinfo []ContainerStatsGenie) string {
 	}
 	fmt.Fprintf(os.Stderr, "CAdvisor Client computeNetworkUsage m = %v\n", m)
 	//sort by values of map
-	cns := SortedKeys(m)
+	cns := utils.SortedKeys(m)
 	for i, c := range cns {
 		if c == "weav" {
 			cns[i] = "weave"
@@ -178,7 +179,7 @@ Returns network solution that has least load
 	- conf : Netconf info having genie configurations
 	- numStats : int (number of stats needed default 3)
 */
-func (gc *GenieController) GetCNSOrderByNetworkBandwith(conf *GenieConf) (string, error) {
+func (gc *GenieController) GetCNSOrderByNetworkBandwith(conf *utils.GenieConf) (string, error) {
 	cAdvisorURL := getCAdvisorAddr(conf)
 
 	cinfo, err := gc.GetDockerContainers(fmt.Sprintf("%s/api/v1.3/", cAdvisorURL), nil)
@@ -196,7 +197,7 @@ func (gc *GenieController) GetCNSOrderByNetworkBandwith(conf *GenieConf) (string
 Returns cAdvisor Address to collect network usage parameters
 	- conf : Netconf info having genie configurations
 */
-func getCAdvisorAddr(conf *GenieConf) string {
+func getCAdvisorAddr(conf *utils.GenieConf) string {
 	conf.CAdvisorAddr = strings.TrimSpace(conf.CAdvisorAddr)
 	if conf.CAdvisorAddr == "" {
 		return DefaultCAdvisorPath
