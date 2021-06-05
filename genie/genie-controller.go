@@ -47,9 +47,9 @@ const (
 	// MultiIPPreferencesAnnotation is a key used for parsing pod
 	// definitions containing "multi-ip-preferences" annotation
 	MultiIPPreferencesAnnotation = "multi-ip-preferences"
-	DefaultNetDir                = "/opt/k8s/cni/net.d"
+	DefaultNetDir                = "/etc/cni/net.d"
 	// DefaultPluginDir specifies the default directory path for cni binary files
-	DefaultPluginDir                   = "/opt/k8s/cni/bin"
+	DefaultPluginDir                   = "/opt/cni/bin"
 	MultiIPPreferencesAnnotationFormat = `{"multi_entry": 0,"ips": {}}`
 	// SupportedPlugins lists the plugins supported by Genie
 	SupportedPlugins = "bridge, calico, canal, flannel, macvlan, Romana, sriov, weave"
