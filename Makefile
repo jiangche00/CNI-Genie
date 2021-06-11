@@ -14,12 +14,12 @@ MAKE_SURE_DIST_EXIST := $(shell mkdir -p dist)
 .PHONY: clean plugin policy-controller policy-controller-binary admission-controller admission-controller-binary test-e2e
 default: plugin policy-controller-binary admission-controller-binary
 
-plugin: clean dist/genie
+plugin: clean dist/genie genie-copy
 
 test-e2e: dist/genie-test
 
 clean:
-	rm -rf dist
+	rm -rf dist dockerbuild/genie-plugin/genie
 
 policy-controller: genie-policy
 policy-controller-binary: genie-policy-binary
@@ -47,6 +47,10 @@ genie-policy-binary:
 genie-policy:
 	echo "Building genie network policy controller..."
 	cd controllers/network-policy-controller && make policy-controller
+
+genie-copy:
+	echo "copy genie binary to docker build context..."
+	cp dist/genie dockerbuild/genie-plugin/genie
 
 # Build the genie cni plugin tests
 dist/genie-test: $(TEST_SRCFILES)
