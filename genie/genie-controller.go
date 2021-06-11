@@ -52,7 +52,7 @@ const (
 	DefaultPluginDir                   = "/opt/cni/bin"
 	MultiIPPreferencesAnnotationFormat = `{"multi_entry": 0,"ips": {}}`
 	// SupportedPlugins lists the plugins supported by Genie
-	SupportedPlugins = "bridge, calico, canal, flannel, macvlan, Romana, sriov, weave"
+	SupportedPlugins = "bridge, calico, canal, flannel, macvlan, Romana, sriov, weave, cilium"
 	// DefaultIfNamePrefix specifies the default prefix to be used while generating interface names
 	DefaultIfNamePrefix = "eth"
 	// NetworkAttachmentDefinitionAnnot specifies the pod Network Attachment Selection Annotation
